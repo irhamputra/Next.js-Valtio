@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
+import { object, string } from 'yup';
 
 import { loginState } from '../store/Login';
 import { START_LOADING, FINISH_LOADING } from '../utils/Loading';
@@ -8,11 +9,15 @@ import { START_LOADING, FINISH_LOADING } from '../utils/Loading';
 const Form = () => {
   const [loading, setLoading] = React.useState({ type: FINISH_LOADING });
   const { replace } = useRouter();
-  const { values, handleChange, handleSubmit } = useFormik({
+  const { values, handleChange, handleSubmit, errors, touched } = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
+    validationSchema: object().shape({
+      email: string().email().required('Please fill the email'),
+      password: string().min(8).required('Password must min. 8 characters'),
+    }),
     onSubmit: ({ password, email }) => {
       setLoading({ type: START_LOADING });
 
@@ -36,6 +41,7 @@ const Form = () => {
             Email
             <input id="email" name="email" type="email" onChange={handleChange} value={values.email} />
           </label>
+          {touched.email && errors.email && <p style={{ color: 'red' }}>{errors.email}</p>}
         </div>
 
         <div>
@@ -43,6 +49,7 @@ const Form = () => {
             Password
             <input id="password" name="password" type="password" onChange={handleChange} value={values.password} />
           </label>
+          {touched.email && errors.password && <p style={{ color: 'red' }}>{errors.password}</p>}
         </div>
         <button type="submit">Submit</button>
       </form>

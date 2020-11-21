@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { NextPage } from 'next';
-import { useProxy } from 'valtio';
+import { useProxy, subscribe } from 'valtio';
 import { useRouter } from 'next/router';
 
 import { loginState } from '../store/Login';
@@ -11,6 +11,8 @@ const Dashboard: NextPage = () => {
   const [loading, setLoading] = React.useState({ type: FINISH_LOADING });
   const { email } = useProxy<LoginState>(loginState);
   const { replace } = useRouter();
+  // snap is actual object of the state
+  // const snap = React.useMemo(() => snapshot(loginState), [loginState]);
 
   React.useEffect(() => {
     setLoading({ type: START_LOADING });
@@ -20,6 +22,13 @@ const Dashboard: NextPage = () => {
     }
 
     setLoading({ type: FINISH_LOADING });
+  }, []);
+
+  React.useEffect(() => {
+    const unsubscribe = subscribe(loginState, () => console.log({ loginState }));
+
+    // unsubscribe to clean up useEffect
+    return unsubscribe();
   }, []);
 
   if (loading.type === START_LOADING) return <p>Loading...</p>;
