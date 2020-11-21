@@ -24,10 +24,25 @@ const Dashboard: NextPage = () => {
 
   if (loading.type === START_LOADING) return <p>Loading...</p>;
 
+  const onLogout = () => {
+    setLoading({ type: START_LOADING });
+    loginState.email = '';
+    loginState.password = '';
+
+    setTimeout(async () => {
+      await replace('/', undefined, { shallow: true });
+      setLoading({ type: FINISH_LOADING });
+    }, 1200);
+  };
+
   return (
     <>
-      <h1>Dashboard page</h1>
+      <h1>Dashboard</h1>
       {email && <p>Welcome! {email} 👋</p>}
+
+      <button onClick={onLogout} type="button">
+        Logout
+      </button>
     </>
   );
 };
